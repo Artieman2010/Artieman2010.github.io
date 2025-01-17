@@ -6,14 +6,7 @@
       const urlParams = new URLSearchParams(window.location.search);
       const refCode = urlParams.get('ref');
       let userID = null;
-  // Get or generate a user ID
-  chrome.storage.local.get(['userID'], function(result) {
-    let userID = result.userID;
-    if (!userID) {
-      userID = generateRandomUserID();
-      chrome.storage.local.set({ userID: userID });
-    }
-  });
+  
       if (refCode) {
         // Save the referral code as a cookie for later use
         document.cookie = `referralCode=${refCode}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=None; Secure`; // Expires in 30 days
