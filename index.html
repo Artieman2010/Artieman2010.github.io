@@ -21,7 +21,7 @@
           if (response.ok) {
             console.log('Referral click tracked successfully');
           } else {
-            console.error('Error tracking referral click');
+            console.error(response.body);
           }
         })
         .catch(error => {
