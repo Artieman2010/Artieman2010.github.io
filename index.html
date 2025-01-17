@@ -14,14 +14,14 @@
         fetch('https://script.google.com/macros/s/AKfycbzV8eI3Cw_de8oEJ5JONkEGfwmGKiq2hVaQtS1452K2CkxsUGfDOnKX7ZhJIK3BMooD/exec', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'click', refCode }),
+          body: JSON.stringify({ action: 'Click', refCode }),
           mode: 'no-cors'
         })
         .then(response => {
           if (response.ok) {
             console.log('Referral click tracked successfully');
           } else {
-            console.error(response.body);
+            console.error('Error tracking referral click');
           }
         })
         .catch(error => {
