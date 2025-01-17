@@ -12,7 +12,7 @@
   
       if (refCode) {
         // Save the referral code as a cookie for later use
-        document.cookie = `referralCode=${refCode}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`; // Expires in 30 days
+        document.cookie = `referralCode=${refCode}; path=/; max-age=${60 * 60 * 24 * 30}`; // Expires in 30 days
   
         // Track the referral click by sending the referral code to your Web App
         fetch('https://script.google.com/macros/s/AKfycbzV8eI3Cw_de8oEJ5JONkEGfwmGKiq2hVaQtS1452K2CkxsUGfDOnKX7ZhJIK3BMooD/exec', {
@@ -23,12 +23,17 @@
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            // Handle success
+            console.log('Referral click tracked successfully');
+          } else {
+            console.error('Error tracking referral click');
           }
         });
       }
+  
+      // Redirect the user to the Chrome Web Store
+      window.location.href = 'https://chrome.google.com/webstore/detail/your-extension-id';
     </script>
-</div>
-
+  </div>
+  
 </body>
 </html>
