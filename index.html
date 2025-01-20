@@ -1,18 +1,18 @@
 
 
 <div id="referral-container">
+  <p> Redirecting to <a href="https://chromewebstore.google.com/detail/escape-goose-web-blocker/gfgacgecfchldicemecobpoafkoimpbp">Escape Goose Web Blocker extension</a></p>
     <script>
       // Extract the referral code from the URL
       const urlParams = new URLSearchParams(window.location.search);
       const refCode = urlParams.get('ref');
-      let userID = null;
   
       if (refCode) {
         // Save the referral code as a cookie for later use
-        document.cookie = `referralCode=${refCode}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=None; Secure`; // Expires in 30 days
+        document.cookie = `referralCode=${refCode}; path=/; max-age=${60 * 60 * 24 * 30}`; // Expires in 30 days
       }
-        // Redirect to Chrome Web Store
-        window.location.href = 'https://chromewebstore.google.com/detail/escape-goose-web-blocker/gfgacgecfchldicemecobpoafkoimpbp';
+        // Redirect to Chrome Web Store after 2 seconds
+        setTimeout(() => {    window.location.href = 'https://chromewebstore.google.com/detail/escape-goose-web-blocker/gfgacgecfchldicemecobpoafkoimpbp'}, 500);
     </script>
 
 
@@ -20,3 +20,4 @@
 </div>
 
 
+        
