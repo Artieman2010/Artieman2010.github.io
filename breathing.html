@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Breathing Site</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f8ff;
+      font-family: Arial, sans-serif;
+      color: #333;
+      text-align: center;
+    }
+    .breathing-bar {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(to bottom, #87ceeb, #4682b4);
+      transform-origin: left;
+      animation: breathing 6s;
+      z-index: 1;
+    }
+    h1 {
+      z-index: 2;
+      position: relative;
+    }
+    @keyframes breathing {
+      0%, 100% {
+        transform: scaleX(0);
+      }
+      50% {
+        transform: scaleX(1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>Take a Deep Breath (and Hold)</h1>
+  </div>
+  <div id="breathing-bar" class="breathing-bar"></div>
+</body>
+</html>
+<script>
+  document.getElementById('breathing-bar').addEventListener('animationend', () => {
+    window.close();
+  });
+</script>
