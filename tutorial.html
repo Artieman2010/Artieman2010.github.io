@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape Goose Tutorial</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-width: 500px;
+            font-size: 16px; /* Base font size increased */
+        }
+
+
+        h1 {
+            color: #2c3e50;
+            font-size: 3em;  /* Increased from 2.5em */
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+
+        .control-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+
+        .toggle-container:hover {
+            transform: translateY(-2px);
+        }
+
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+
+        input:checked + .slider {
+            background-color: #2ecc71;
+        }
+
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1.1em;   /* Increased from 16px */
+            transition: border-color 0.3s ease;
+        }
+
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;   /* Increased from 16px */
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin: 8px 0;
+        }
+
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .site-list {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .site-list li {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 15px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+            gap: 15px;
+            min-height: 60px; /* Add minimum height */
+            position: relative; /* For button positioning */
+        }
+
+
+        .site-list li span {
+            flex: 1;
+            margin-right: 200px; /* Make space for buttons */
+            word-wrap: break-word; /* Allow text to wrap */
+            max-width: calc(100% - 300px); /* Prevent text from pushing into button area */
+            font-size: 1.1em; /* Added font size */
+        }
+
+
+        .site-list li button {
+            position: absolute; /* Fix button positions */
+            width: 120px;
+            margin: 0 5px;
+            padding: 8px 12px;
+            right: 15px; /* Distance from right edge */
+        }
+
+
+        .site-list li button:nth-last-child(1) { /* Delete button */
+            right: 15px;
+        }
+
+
+        .site-list li button:nth-last-child(2) { /* Extend button */
+            right: 145px; /* 120px (button width) + 25px (spacing) */
+        }
+
+
+        .site-list li:hover {
+            transform: translateY(-2px);
+        }
+
+
+        .dropdown-toggle {
+            background: #e67e22;
+            font-size: 1.1em;   /* Increased from 16px */
+        }
+
+
+        .dropdown-content {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+
+        footer {
+            text-align: center;
+            color: #7f8c8d;
+            margin-top: 30px;
+            padding: 20px;
+        }
+
+
+        footer p {
+            font-size: 1.2em;  /* Increased from 1.1em */
+        }
+
+
+        /* Keep your existing button-specific styles */
+        .selected {
+            background-color: #cce7ff;  /* Light blue background for selected rows */
+        }
+        /* Style for the disabled input field */
+        input:disabled {
+            background-color: #f0f0f0;  /* Light gray background */
+            color: #888888;  /* Gray text */
+            border: 1px solid #cccccc;  /* Lighter border */
+            cursor: not-allowed;  /* Change cursor to indicate the input is not interactable */
+        }
+
+
+        button.disabled {
+            background-color: #ccc; /* Grey background */
+            color: #888; /* Light grey text */
+            cursor: not-allowed; /* Change cursor to indicate the button is disabled */
+            pointer-events: none; /* Disable interaction with the button */
+            opacity: 0.5; /* Optionally reduce opacity for a clearer "disabled" effect */
+        }
+
+
+        button.disabled:hover {
+            background-color: #ccc; /* Keep the grey background even on hover */
+            color: #888; /* Keep the grey text even on hover */
+            cursor: not-allowed; /* Ensure the cursor remains "not-allowed" even on hover */
+        }
+
+
+        button.delete-selected {
+            background-color: #ff4d4d; /* Red background */
+            color: white; /* White text */
+            border: none;
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 120px; /* Added max-width */
+            margin-left: 10px; /* Added margin */
+        }
+
+
+        button.delete-selected:hover {
+            background-color: #e60000; /* Darker red on hover */
+        }
+
+
+        button.extend-selected {
+            background-color: #4CAF50; /* Green background */
+            color: white; /* White text */
+            border: none;
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 120px; /* Added max-width */
+            margin-left: 10px; /* Added margin */
+        }
+
+
+        button.extend-selected:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+        button.delete-selected.disabled {
+            background-color: #ffcccc; /* Light red background */
+            color: #888; /* Light grey text */
+            cursor: not-allowed; /* Change cursor to indicate the button is disabled */
+            pointer-events: none; /* Disable interaction with the button */
+            opacity: 0.5; /* Optionally reduce opacity for a clearer "disabled" effect */
+        }
+
+
+        button.delete-selected.disabled:hover {
+            background-color: #ffcccc; /* Keep the light red background even on hover */
+            color: #888; /* Keep the grey text even on hover */
+            cursor: not-allowed; /* Ensure the cursor remains "not-allowed" even on hover */
+        }
+
+
+        button.extend-selected.disabled {
+            background-color: #ccffcc; /* Light green background */
+            color: #888; /* Light grey text */
+            cursor: not-allowed; /* Change cursor to indicate the button is disabled */
+            pointer-events: none; /* Disable interaction with the button */
+            opacity: 0.5; /* Optionally reduce opacity for a clearer "disabled" effect */
+        }
+
+
+        button.extend-selected.disabled:hover {
+            background-color: #ccffcc; /* Keep the light green background even on hover */
+            color: #888; /* Keep the grey text even on hover */
+            cursor: not-allowed; /* Ensure the cursor remains "not-allowed" even on hover */
+        }
+
+
+        button#refresh-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 6px 12px; /* Smaller padding */
+            font-size: 12px; /* Smaller font */
+            cursor: pointer;
+            border-radius: 5px;
+            margin-right: 10px;
+            width: auto; /* Override default width */
+            min-width: 80px; /* Set minimum width */
+            max-width: 100px; /* Set maximum width */
+        }
+
+
+        button.add-memes {
+            background-color: #ff9800; /* Orange background */
+            color: white; /* White text */
+            border: none;
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            width: 100%;
+            transition: background-color 0.3s, transform 0.3s; /* Smooth transition for hover effects */
+        }
+
+
+        button.add-memes:hover {
+            background-color: #e68900; /* Darker orange on hover */
+            transform: scale(1.05); /* Slightly enlarge the button on hover */
+        }
+
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+
+        .dropdown-toggle {
+            width: 100%;
+            background: #FF8C00;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 1.1em;   /* Increased from 16px */
+            cursor: pointer;
+            border-radius: 5px;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+
+        .dropdown-toggle::after {
+            content: '\25BC';
+            font-size: 12px;
+            margin-left: 10px;
+            transition: transform 0.3s;
+        }
+
+
+        .dropdown.show .dropdown-toggle::after {
+            transform: rotate(180deg);
+        }
+
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 100%;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            padding: 12px 16px;
+            z-index: 1;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+
+        .dropdown.show .dropdown-content {
+            display: block;
+        }
+
+
+        .meme-list {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+
+        .meme-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+
+        .meme-list li:last-child {
+            border-bottom: none;
+        }
+
+
+        .meme-list li img {
+            max-width: 50px;
+            max-height: 50px;
+            margin-right: 10px;
+        }
+
+
+        .custom-file-upload {
+            display: inline-block;
+            width: 100%;
+            padding: 8px 12px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+
+        .custom-file-upload:hover {
+            background-color: #45a049;
+        }
+
+
+        .loading {
+            opacity: 0.7;
+            cursor: wait !important;
+        }
+
+
+        .error-message {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+            animation: slideIn 0.3s ease-out;
+        }
+
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+
+        h2 {
+            color: #34495e;
+            font-size: 2.5em;    /* Increased from 2em */
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+
+        .question {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+
+        .question h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.8em;  /* Increased from 1.5em */
+        }
+
+
+        .description {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 1.2em;  /* Increased from 1.1em */
+        }
+
+
+        .complete-setup-btn {
+            display: inline-block;
+            background: #2ecc71;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+
+        .complete-setup-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+
+    <div style="background-color: #ffebee; border: 2px solid #ef5350; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <p style="color: #c62828; margin: 0;">
+            Note: The goose does not appear on a few websites and blank start tabs, and the goose only appears on new tabs from this point on. All settings can be changed later in the extension popup.
+        </p>
+    </div>
+    <h1>Setup Your Escape Goose Web Blocker</h1>
+
+
+    <div class="control-panel">
+        <h2>Step 1: Basic Goose Settings</h2>
+       
+        <div class="question" id="question-1">
+            <h3>Would you like to enable the goose?</h3>
+            <p class="description">The goose will appear on websites to help keep you accountable</p>
+            <div class="toggle-container">
+            <label class="switch">
+                <input type="checkbox" id="toggle-goose" checked>
+                <span class="slider"></span>
+            </label>
+            </div>
+            <button class="next-btn" data-next="2">Next</button>
+        </div>
+
+
+        <div class="question" id="question-2" style="display: none;">
+            <h3>Would you like the goose to show memes?</h3>
+            <p class="description">Memes will pop up periodically to keep you company</p>
+            <div class="toggle-container">
+                <label class="switch">
+                    <input type="checkbox" id="toggle-memes">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <button class="next-btn" data-next="3">Next</button>
+        </div>
+
+
+        <div class="question" id="question-3" style="display: none;">
+            <h3>How often would you like memes to appear?</h3>
+            <p class="description">Enter the number of seconds between each meme (minimum 5 seconds)</p>
+            <input type="number" id="meme-interval" placeholder="Enter seconds (minimum 5)" min="5">
+            <button class="next-btn" data-next="4">Next</button>
+        </div>
+
+
+        <div class="question" id="question-4" style="display: none;">
+            <h3>Would you like sound effects?</h3>
+            <p class="description">The goose can make honking sounds to get your attention</p>
+            <div class="toggle-container">
+                <label class="switch">
+                    <input type="checkbox" id="toggle-sound">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <button class="next-btn" data-next="5">Next</button>
+        </div>
+    </div>
+
+
+    <div class="control-panel" id="question-5" style="display: none;">
+        <h2>Step 2: Customize Your Memes</h2>
+       
+        <div class="question">
+            <h3>Would you like to add your own memes?</h3>
+            <p class="description">Upload your favorite motivation memes (we already have pre-added goose memes, but you can always delete them)</p>
+            <div class="dropdown">
+                <button class="dropdown-toggle">Upload Custom Memes</button>
+                <div class="dropdown-content">
+                    <label for="meme-upload" class="custom-file-upload">
+                        <i class="fas fa-cloud-upload-alt"></i> Choose Files
+                    </label>
+                    <input type="file" id="meme-upload" accept="image/*" multiple style="display: none;">
+                    <ul id="meme-list" class="meme-list"></ul>
+                </div>
+            </div>
+            <button class="next-btn" data-next="6">Next</button>
+        </div>
+    </div>
+
+    <div class="control-panel" id="question-6" style="display: none;">
+        <h2>Step 3: Goals</h2>
+        <div class="question">
+            <h3>Would you like to set your first goal?</h3>
+            <p class="description">Goals help you stay focused on what matters</p>
+            <div class="goals-section">
+                <div class="goals-header">
+                    <button id="add-goal" class="icon-button">
+                        <i class="fas fa-plus-circle"></i> Add Goal
+                    </button>
+                </div>
+                <ul id="goals-list" class="goals-list"></ul>
+            </div>
+            <button class="next-btn" data-next="7">Next</button>
+        </div>
+    </div>
+
+    <div class="control-panel" id="question-7" style="display: none;">
+        <h2>Step 4: Website Blocking</h2>
+        <div class="question">
+            <h3>Would you like to block any websites?</h3>
+            <p class="description">Block distracting websites to stay focused</p>
+            <div class="toggle-container">
+                <label class="switch">
+                    <input type="checkbox" id="toggle-blocking">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <button class="next-btn" data-next="8">Next</button>
+        </div>
+    </div>
+
+    <div class="control-panel" id="question-8" style="display: none;">
+        <h2>Website Blocking Setup</h2>
+        <div class="question">
+            <select id="category-dropdown">
+                <option value="">Select a category to block (Auto Adds Category)</option>
+                <option value="social-media">Social Media</option>
+                <option value="news-sites">News Sites</option>
+                <option value="online-gaming">Online Gaming</option>
+                <option value="custom">Choose Your Own</option>
+            </select>
+            <input type="text" id="site-input" placeholder="Enter a site or site keyword to block (e.g. youtube.com, tiktok)" maxlength="25">
+            <input type="number" id="block-duration" placeholder="Optional: Locked in (hours)" min="0">
+            <button id="add-site">Block Site ✅</button>
+            <ul id="site-list" class="site-list"></ul>
+            <button class="complete-setup-btn" id="complete-setup">Complete Setup</button>
+        </div>
+    </div>
+
+
+    <footer>
+        <p>&copy; 2024 Escape Goose Web Blocker. All rights reserved.</p>
+    </footer>
+    <script src = "startup.js"></script>
+    <script src="popup.js"></script>
+
+
+</body>
+</html>
+
+
+

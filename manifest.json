@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "Escape Goose Web Blocker",
+  "version": "2.1",
+  "description": "One purpose: Self-Improvement",
+  "permissions": [
+
+    "storage",
+    "cookies"
+   
+
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "file://*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+},
+  "web_accessible_resources": [
+    {
+      "resources": ["door.gif", "setup-complete.html", "tutorial.html", "icon.png", "startup.html", "memes/Meme1.png", "memes/Meme2.png", "memes/Meme3.png",  "memes/Meme5.png", "memes/Meme6.png", "memes/Meme7.png", "memes/GooseDance.gif", "Honk4.mp3", "block.html"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+}

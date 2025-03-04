@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape Goose Web Blocker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-width: 500px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .control-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-container:hover {
+            transform: translateY(-2px);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2ecc71;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        input[type="text"], 
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin: 8px 0;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .site-list {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .site-list li {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 15px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+            gap: 15px;
+            min-height: 60px; /* Add minimum height */
+            position: relative; /* For button positioning */
+        }
+
+        .site-list li span {
+            flex: 1;
+            margin-right: 200px; /* Make space for buttons */
+            word-wrap: break-word; /* Allow text to wrap */
+            max-width: calc(100% - 300px); /* Prevent text from pushing into button area */
+        }
+
+        .site-list li button {
+            position: absolute; /* Fix button positions */
+            width: 120px;
+            margin: 0 5px;
+            padding: 8px 12px;
+            right: 15px; /* Distance from right edge */
+        }
+
+        .site-list li button:nth-last-child(1) { /* Delete button */
+            right: 15px;
+        }
+
+        .site-list li button:nth-last-child(2) { /* Extend button */
+            right: 145px; /* 120px (button width) + 25px (spacing) */
+        }
+
+        .site-list li:hover {
+            transform: translateY(-2px);
+        }
+
+        .dropdown-toggle {
+            background: #e67e22;
+        }
+
+        .dropdown-content {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        footer {
+            text-align: center;
+            color: #7f8c8d;
+            margin-top: 30px;
+            padding: 20px;
+        }
+
+        /* Keep your existing button-specific styles */
+        .selected {
+            background-color: #cce7ff;  /* Light blue background for selected rows */
+        }
+        /* Style for the disabled input field */
+        input:disabled {
+            background-color: #f0f0f0;  /* Light gray background */
+            color: #888888;  /* Gray text */
+            border: 1px solid #cccccc;  /* Lighter border */
+            cursor: not-allowed;  /* Change cursor to indicate the input is not interactable */
+        }
+
+        button.disabled {
+            background-color: #ccc; /* Grey background */
+            color: #888; /* Light grey text */
+            cursor: not-allowed; /* Change cursor to indicate the button is disabled */
+            pointer-events: none; /* Disable interaction with the button */
+            opacity: 0.5; /* Optionally reduce opacity for a clearer "disabled" effect */
+        }
+
+        button.disabled:hover {
+            background-color: #ccc; /* Keep the grey background even on hover */
+            color: #888; /* Keep the grey text even on hover */
+            cursor: not-allowed; /* Ensure the cursor remains "not-allowed" even on hover */
+        }
+
+        button.delete-selected {
+            background-color: #ff4d4d; /* Red background */
+            color: white; /* White text */
+            border: none;
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 120px; /* Added max-width */
+            margin-left: 10px; /* Added margin */
+        }
+
+        button.delete-selected:hover {
+            background-color: #e60000; /* Darker red on hover */
+        }
+
+        button.extend-selected {
+            background-color: #4CAF50; /* Green background */
+            color: white; /* White text */
+            border: none;
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 120px; /* Added max-width */
+            margin-left: 10px; /* Added margin */
+        }
+
+        button.extend-selected:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+        button.delete-selected.disabled {
+            background-color: #ffcccc; /* Light red background */
+            color: #888; /* Light grey text */
+            cursor: not-allowed; /* Change cursor to indicate the button is disabled */
+            pointer-events: none; /* Disable interaction with the button */
+            opacity: 0.5; /* Optionally reduce opacity for a clearer "disabled" effect */
+        }
+
+        button.delete-selected.disabled:hover {
+            background-color: #ffcccc; /* Keep the light red background even on hover */
+            color: #888; /* Keep the grey text even on hover */
+            cursor: not-allowed; /* Ensure the cursor remains "not-allowed" even on hover */
+        }
+
+        button.extend-selected.disabled {
+            background-color: #ccffcc; /* Light green background */
+            color: #888; /* Light grey text */
+            cursor: not-allowed; /* Change cursor to indicate the button is disabled */
+            pointer-events: none; /* Disable interaction with the button */
+            opacity: 0.5; /* Optionally reduce opacity for a clearer "disabled" effect */
+        }
+
+        button.extend-selected.disabled:hover {
+            background-color: #ccffcc; /* Keep the light green background even on hover */
+            color: #888; /* Keep the grey text even on hover */
+            cursor: not-allowed; /* Ensure the cursor remains "not-allowed" even on hover */
+        }
+
+        button#refresh-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 6px 12px; /* Smaller padding */
+            font-size: 12px; /* Smaller font */
+            cursor: pointer;
+            border-radius: 5px;
+            margin-right: 10px;
+            width: auto; /* Override default width */
+            min-width: 80px; /* Set minimum width */
+            max-width: 100px; /* Set maximum width */
+        }
+
+        button.add-memes {
+            background-color: #ff9800; /* Orange background */
+            color: white; /* White text */
+            border: none;
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            width: 100%;
+            transition: background-color 0.3s, transform 0.3s; /* Smooth transition for hover effects */
+        }
+
+        button.add-memes:hover {
+            background-color: #e68900; /* Darker orange on hover */
+            transform: scale(1.05); /* Slightly enlarge the button on hover */
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .dropdown-toggle {
+            width: 100%;
+            background: #FF8C00;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dropdown-toggle::after {
+            content: '\25BC';
+            font-size: 12px;
+            margin-left: 10px;
+            transition: transform 0.3s;
+        }
+
+        .dropdown.show .dropdown-toggle::after {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 100%;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            padding: 12px 16px;
+            z-index: 1;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .dropdown.show .dropdown-content {
+            display: block;
+        }
+
+        .meme-list {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .meme-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .meme-list li:last-child {
+            border-bottom: none;
+        }
+
+        .meme-list li img {
+            max-width: 50px;
+            max-height: 50px;
+            margin-right: 10px;
+        }
+
+        .custom-file-upload {
+            display: inline-block;
+            width: 100%;
+            padding: 8px 12px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+        .custom-file-upload:hover {
+            background-color: #45a049;
+        }
+
+        .loading {
+            opacity: 0.7;
+            cursor: wait !important;
+        }
+
+        .error-message {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h3 {
+           
+            color: #34495e;
+            font-size: 1.25em;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+
+        }
+        .score-container {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .current-score {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .progress-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .progress-tier {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .tier-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        #next-goal {
+            margin-top: 15px;
+            font-style: italic;
+            color: #666;
+        }
+
+        #tier-badge {
+            margin-left: 10px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .rookie-badge {
+            background-color: #90caf9;
+            color: #1565c0;
+        }
+
+        .expert-badge {
+            background-color: #a5d6a7;
+            color: #2e7d32;
+        }
+
+        .master-badge {
+            background-color: #ffcc80;
+            color: #ef6c00;
+        }
+
+        .referral-link-container {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .referral-link-container input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+            color: #666;
+        }
+
+        .referral-link-container button {
+            padding: 8px 15px;
+            margin: 0 5px;
+            min-width: 70px;
+            width: auto;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            margin: 0;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            position: relative;
+            transition: all 0.3s ease;
+            width: auto;
+        }
+
+        .tab-button.active {
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #3498db;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .shop-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .item-details h3 {
+            margin: 0 0 5px 0;
+            color: #2c3e50;
+        }
+
+        .item-details p {
+            margin: 0;
+            color: #666;
+        }
+
+        .cost {
+            color: #e67e22 !important;
+            font-weight: bold;
+            margin-top: 5px !important;
+        }
+
+        .item-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .shop-button {
+            width: auto;
+            min-width: 100px;
+        }
+
+        .shop-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .shop-item.locked {
+            opacity: 0.7;
+            background: #f0f0f0;
+        }
+        
+        .shop-item.locked .item-details {
+            color: #666;
+        }
+        
+        .shop-item.locked button {
+            background-color: #999;
+            cursor: not-allowed;
+        }
+        
+        .item-tier-requirement {
+            color: #e74c3c;
+            font-style: italic;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+        .progress-bar.loading {
+            opacity: 0.6;
+            position: relative;
+        }
+
+        .progress-bar.loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #people-helped .loading-spinner,
+        #score-value .loading-spinner {
+            width: 30px;
+            height: 30px;
+        }
+
+        .goals-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .goals-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .goals-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .goal-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: opacity 0.3s ease;
+        }
+
+        .goal-checkbox {
+            align-self: flex-start;
+            margin-right: 8px;
+        }
+
+        .goal-label {
+            color: #666;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .interval-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .goal-content {
+            padding: 4px 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin: 4px 0;
+        }
+
+        .goal-interval {
+            width: 80px;
+            padding: 4px 8px;
+        }
+    </style>
+</head>
+<body>
+  <h1>Escape Goose Web Blocker</h1>
+ 
+    <div class="tabs">
+        <button class="tab-button active" data-tab="settings">Settings</button>
+        <button class="tab-button" data-tab="score">Escape Score</button>
+    </div>
+
+    <div id="settings-tab" class="tab-content active">
+        <div class="control-panel">
+            <h2>Goose Settings</h2>
+            <div class="toggle-container">
+                <span>Toggle Goose</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggle-goose">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-container">
+                <span>Toggle Memes</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggle-memes">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-container">
+                <span>Toggle Sound</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggle-sound">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <input type="number" id="meme-interval" placeholder="Enter meme interval (seconds)" min="1">
+            <span id="meme-interval-description">(Seconds per meme. Must be ≥ 5)</span>
+       
+            <div class="dropdown">
+                <button class="dropdown-toggle">Upload Your Own Memes</button>
+                <div class="dropdown-content">
+                    <label for="meme-upload" class="custom-file-upload">
+                        <i class="fas fa-cloud-upload-alt"></i> Choose Files
+                    </label>
+                    <input type="file" id="meme-upload" accept="image/*" multiple style="display: none;">
+                    <ul id="meme-list" class="meme-list"></ul>
+                </div>
+            </div>
+
+            <!-- Add new goals section -->
+            <div class="goals-section">
+                <h3>Goals</h3>
+                <div class="goals-header">
+                    <button id="add-goal" class="icon-button">
+                        <i class="fas fa-plus-circle"></i> Add Goal
+                    </button>
+                </div>
+                <ul id="goals-list" class="goals-list"></ul>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <h2>Blocking Settings</h2>
+            <select id="category-dropdown">
+                <option value="">Select a category to block (Auto Adds Category)</option>
+                <option value="social-media">Social Media</option>
+                <option value="news-sites">News Sites</option>
+                <option value="online-gaming">Online Gaming</option>
+                <option value="custom">Choose Your Own</option>
+            </select>
+            <input type="text" id="site-input" placeholder="Enter a site or site keyword to block (e.g. youtube.com, tiktok)" maxlength="25">
+            <input type="number" id="block-duration" placeholder="Optional: Locked in (hours)" min="0">
+            <button id="add-site">Block Site ✅</button>
+            <ul id="site-list" class="site-list"></ul>
+        </div>
+    </div>
+
+    <div id="score-tab" class="tab-content">
+        <div class="control-panel">
+            <h2>Spread the Freedom</h2>
+            <div style="text-align: center; padding: 20px; background: #e8f5e9; border-radius: 12px; margin-bottom: 20px;">
+                <h3 style="color: #2e7d32; margin: 0;">People You've Helped Escape</h3>
+                <div style="font-size: 64px; color: #1b5e20; font-weight: bold; margin: 15px 0;" id="people-helped">Loading...</div>
+                <p style="color: #388e3c; margin: 0; font-size: 1.7em;">Share your referral links below to help more people!</p>
+            </div>
+        
+            <button class="add-memes" id="track-referral">
+              
+                Generate Referral Link 🎯
+            </button>
+            <div id="captchaPlace"></div>
+            <div id="referral-links"></div>
+        </div>
+
+        <div class="control-panel">
+            <h2>Achievement Score 🏆</h2>
+        <h3 style="text-align: center; color: #666; font-style: italic; margin: 10px 0;">Get more points by sharing your referral link to get new users!</h3>
+            <div class="score-container">
+                <div class="current-score">
+                    <span>Current Score: </span>
+                    <span id="score-value">Loading...</span>
+                    <span id="tier-badge"></span>
+                </div>
+                <div class="progress-bars">
+                    <div class="progress-tier" id="current-tier">
+                        <span class="tier-label"></span>
+                        <div class="progress-bar">
+                            <div class="progress" id="tier-progress"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="next-goal"></div>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <h2>Upgrades Shop 🛍️</h2>
+            <div class="shop-container">
+                <div class="shop-item">
+                    <div class="item-details">
+                        <h3>Rainbow Mode</h3>
+                        <p>Get a rainbow colored goose trail!</p>
+                        <p class="item-tier-requirement">Requires Rookie Tier</p>
+                    </div>
+                    <div class="item-controls">
+                        <button id="buy-rainbow" class="shop-button">Unlock at Rookie Tier</button>
+                        <label class="switch" style="display: none;">
+                            <input type="checkbox" id="toggle-rainbow" disabled>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="shop-item">
+                    <div class="item-details">
+                        <h3>Mini Goose Army</h3>
+                        <p>Spawn multiple mini geese!</p>
+                        <p class="item-tier-requirement">Requires Expert Tier</p>
+                    </div>
+                    <div class="item-controls">
+                        <button id="buy-army" class="shop-button">Unlock at Expert Tier</button>
+                        <label class="switch" style="display: none;">
+                            <input type="checkbox" id="toggle-army" disabled>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="shop-item">
+                    <div class="item-details">
+                        <h3>Disco Mode</h3>
+                        <p>Make the background flash in disco colors!</p>
+                        <p class="item-tier-requirement">Requires Master Tier</p>
+                    </div>
+                    <div class="item-controls">
+                        <button id="buy-disco" class="shop-button">Unlock at Master Tier</button>
+                        <label class="switch" style="display: none;">
+                            <input type="checkbox" id="toggle-disco" disabled>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Escape Goose Web Blocker. All rights reserved.
+            <br>
+            This extension is protected by hCaptcha and its
+<a href="https://www.hcaptcha.com/privacy">Privacy Policy</a> and
+<a href="https://www.hcaptcha.com/terms">Terms of Service</a> apply.
+        </p>
+    </footer>
+    <script src="api.js" async defer onerror="this.onerror=null;"></script>
+
+    <script src="popup.js"></script>
+
+
+</body>
+</html>
